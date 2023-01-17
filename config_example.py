@@ -1,0 +1,5 @@
+planilha_url = 'url + ?download=1'
+openfire_password = 'password'
+openfire_user = 'admin'
+cooperativa_code = '1111'
+openfire_api = 'http://openfire.host/plugins/restapi/v1'
