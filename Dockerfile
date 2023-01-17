@@ -9,4 +9,4 @@ WORKDIR /app
 # Install Requirements
 RUN pip install -r requirements.txt
 
-ENTRYPOINT ["python", "openfire_sync.py",]
+CMD "python" "openfire_sync.py"
