@@ -1,6 +1,5 @@
 import requests
 from io import BytesIO
-import time
 import pandas as pd
 from openfire import Openfire
 import jellyfish
@@ -32,7 +31,7 @@ planilha_coopemg = pd.read_excel(
 )
 
 planilha_coopemg.dropna(thresh=5, axis=0, inplace=True)
-planilha_coopemg[1] = planilha_coopemg[1].fillna(method='bfill')
+planilha_coopemg[1] = planilha_coopemg[1].fillna(method='ffill')
 planilha_coopemg.fillna('', inplace=True)
 
 lista_users_update_add = []
@@ -104,4 +103,3 @@ if reposta.upper() == "S":
             print('Descrição nova: ', user[2])      
             retorno = openfire.update_user_name(user[0], user[2])
             print(user[0], retorno)
-            time.sleep(1)
