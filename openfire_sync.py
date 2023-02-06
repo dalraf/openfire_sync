@@ -29,7 +29,8 @@ coopemg_arquivo_data = get_file_data(planilha_url)
 planilha_coopemg = pd.read_excel(
     coopemg_arquivo_data, skiprows=6, index_col=None, header=None
 )
-planilha_coopemg.fillna("", inplace=True)
+planilha_coopemg.fillna(method='ffill', inplace=True)
+planilha_coopemg.fillna('', inplace=True)
 
 lista_users_update_add = []
 for j in planilha_coopemg.iterrows():
