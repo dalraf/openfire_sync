@@ -1,5 +1,6 @@
 import requests
 from io import BytesIO
+import time
 import pandas as pd
 from openfire import Openfire
 import jellyfish
@@ -29,7 +30,9 @@ coopemg_arquivo_data = get_file_data(planilha_url)
 planilha_coopemg = pd.read_excel(
     coopemg_arquivo_data, skiprows=6, index_col=None, header=None
 )
-planilha_coopemg.fillna(method='ffill', inplace=True)
+
+planilha_coopemg.dropna(thresh=5, axis=0, inplace=True)
+planilha_coopemg[1] = planilha_coopemg[1].fillna(method='bfill')
 planilha_coopemg.fillna('', inplace=True)
 
 lista_users_update_add = []
@@ -48,6 +51,7 @@ for j in planilha_coopemg.iterrows():
         print(j)
         print(e.args[0])
         exit(1)
+
 
 lista_usuario_search = []
 for row in lista_users_update_add:
@@ -76,22 +80,28 @@ for row in lista_users_update_add:
             semelhanca = jellyfish.jaro_similarity(nome_search, nome_real)
             if semelhanca > semelhanca_maior:
                 nome_certo = nome_search
-                descricao_antiga = user[1]
                 id = user[0]
                 semelhanca_maior = semelhanca
-        if semelhanca_maior > 0.5:
-            descricao = nome_certo + setor + contato
-            diferenca = descricao == descricao_antiga
-            lista_usuario_search.append([id, descricao, descricao_antiga, diferenca])
+                descricao_antiga = user[1]
+        if semelhanca_maior > 0.9:
+            descricao_nova = nome_certo + setor + contato
+            diferenca = (descricao_nova == descricao_antiga)
+            lista_usuario_search.append([id, descricao_antiga, descricao_nova, diferenca])
 
-lista_usuario_search = [i for i in lista_usuario_search if i[3] == False]
 
 print("Valores a serem alterados:")
 for user in lista_usuario_search:
-    pprint(user)
+    if not user[3]:
+        pprint(user)
 
 reposta = input("Deseja continuar? (S,N) :")
 
 if reposta.upper() == "S":
     for user in lista_usuario_search:
-        openfire.update_user_name(user[0], user[1])
+        if not user[3]:
+            print('Alterando usuário: ', user[0])
+            print('Descrição antiga: ', user[1])
+            print('Descrição nova: ', user[2])      
+            retorno = openfire.update_user_name(user[0], user[2])
+            print(user[0], retorno)
+            time.sleep(1)
