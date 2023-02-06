@@ -31,8 +31,8 @@ planilha_coopemg = pd.read_excel(
 )
 
 planilha_coopemg.dropna(thresh=5, axis=0, inplace=True)
-planilha_coopemg[1] = planilha_coopemg[1].fillna(method='ffill')
-planilha_coopemg.fillna('', inplace=True)
+planilha_coopemg[1] = planilha_coopemg[1].fillna(method="ffill")
+planilha_coopemg.fillna("", inplace=True)
 
 lista_users_update_add = []
 for j in planilha_coopemg.iterrows():
@@ -84,22 +84,22 @@ for row in lista_users_update_add:
                 descricao_antiga = user[1]
         if semelhanca_maior > 0.9:
             descricao_nova = nome_certo + setor + contato
-            diferenca = (descricao_nova == descricao_antiga)
-            lista_usuario_search.append([id, descricao_antiga, descricao_nova, diferenca])
+            if descricao_nova != descricao_antiga:
+                lista_usuario_search.append(
+                    [id, descricao_antiga, descricao_nova]
+                )
 
-
-print("Valores a serem alterados:")
-for user in lista_usuario_search:
-    if not user[3]:
-        pprint(user)
-
-reposta = input("Deseja continuar? (S,N) :")
-
-if reposta.upper() == "S":
-    for user in lista_usuario_search:
-        if not user[3]:
-            print('Alterando usuário: ', user[0])
-            print('Descrição antiga: ', user[1])
-            print('Descrição nova: ', user[2])      
+if len(lista_usuario_search) == 0:
+    print("Não há usuários a serem alterados.")
+    exit(0)
+else:
+    print("Valores a serem alterados:")
+    pprint(user)
+    reposta = input("Deseja continuar? (S,N) :")
+    if reposta.upper() == "S":
+        for user in lista_usuario_search:
+            print("Alterando usuário: ", user[0])
+            print("Descrição antiga: ", user[1])
+            print("Descrição nova: ", user[2])
             retorno = openfire.update_user_name(user[0], user[2])
             print(user[0], retorno)
