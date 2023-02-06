@@ -29,64 +29,65 @@ coopemg_arquivo_data = get_file_data(planilha_url)
 planilha_coopemg = pd.read_excel(
     coopemg_arquivo_data, skiprows=6, index_col=None, header=None
 )
-planilha_coopemg = planilha_coopemg.dropna(axis=0)
+planilha_coopemg.fillna("", inplace=True)
 
 lista_users_update_add = []
 for j in planilha_coopemg.iterrows():
-    nome = j[1][1].strip()
-    cargo = j[1][0].strip()
-    ramal = j[1][3] if j[1][3] != "*" else ""
-    telefone = j[1][2] if "Apenas Ramal" not in j[1][2] and "*" not in j[1][2] else ""
-    celular = j[1][4] if j[1][4] != "*" else ""
-    lista_users_update_add.append([nome, cargo, ramal, telefone, celular])
-
+    try:
+        nome = j[1][2].strip()
+        if nome != "":
+            cargo = j[1][1].strip()
+            ramal = j[1][4] if j[1][3] != "*" else ""
+            telefone = (
+                j[1][3] if "Apenas Ramal" not in j[1][2] and "*" not in j[1][2] else ""
+            )
+            celular = j[1][5] if j[1][4] != "*" else ""
+            lista_users_update_add.append([nome, cargo, ramal, telefone, celular])
+    except Exception as e:
+        print(j)
+        print(e.args[0])
+        exit(1)
 
 lista_usuario_search = []
 for row in lista_users_update_add:
-    nome_search = row[0]
-    setor = row[1]
-    if str(row[2]) != "" and row[3] != "" and row[4] != "":
-        ramal = "ramal " + str(row[2]) + " - " + str(row[3]) + " / " + str(row[4])
-    elif str(row[2]) != "" and row[3] != "" and row[4] == "":
-        ramal = "ramal " + str(row[2]) + " - " + str(row[3])
-    elif str(row[2]) != "" and row[3] == "" and row[4] != "":
-        ramal = "ramal " + str(row[2]) + " / " + str(row[4])
-    elif str(row[2]) != "" and row[3] == "" and row[4] == "":
-        ramal = "ramal " + str(row[2])
-    elif str(row[2]) == "" and row[3] != "" and row[4] != "":
-        ramal = "ramal " + str(row[3]) + " / " + str(row[4])
-    elif str(row[2]) == "" and row[3] == "" and row[4] != "":
-        ramal = "ramal " + str(row[4])
-    else:
-        ramal = ""
-    semelhanca_maior = 0
-    for user in openfire.users_list:
-        nome_real = user[1].strip().replace("–", "-").split("-")[0].strip()
-        semelhanca = jellyfish.jaro_similarity(nome_search, nome_real)
-        if semelhanca > semelhanca_maior:
-            nome_certo = nome_search
-            descricao_antiga = user[1]
-            id = user[0]
-            semelhanca_maior = semelhanca
-    if ramal != "":
-        descricao = " ".join(
-            [
-                nome_certo,
-                "-",
-                setor,
-                "-",
-                ramal,
-            ]
+    nome_search = str(row[0])
+    if not any([i in nome_search for i in ["Sem Atendente", "*"]]):
+        setor = " - " + str(row[1]) if str(row[1]) != "" else " - Sem Setor"
+        ramal_interno = (
+            " - " + str(row[2]).strip()
+            if str(row[2]).strip() != "" and str(row[2]).strip() != "*"
+            else ""
         )
-    else:
-        descricao = " ".join([nome_certo, "-", setor])
-    diferenca = descricao == descricao_antiga
-    lista_usuario_search.append([id, descricao, descricao_antiga, diferenca])
+        telefone_fixo = (
+            " - " + str(row[3]).strip()
+            if str(row[3]).strip() != "" and str(row[3]).strip() != "*"
+            else ""
+        )
+        celular = (
+            " / " + str(row[4]).strip()
+            if str(row[4]).strip() != "" and str(row[4]).strip() != "*"
+            else ""
+        )
+        contato = ramal_interno + telefone_fixo + celular
+        semelhanca_maior = 0
+        for user in openfire.users_list:
+            nome_real = user[1].strip().replace("–", "-").split("-")[0].strip()
+            semelhanca = jellyfish.jaro_similarity(nome_search, nome_real)
+            if semelhanca > semelhanca_maior:
+                nome_certo = nome_search
+                descricao_antiga = user[1]
+                id = user[0]
+                semelhanca_maior = semelhanca
+        if semelhanca_maior > 0.5:
+            descricao = nome_certo + setor + contato
+            diferenca = descricao == descricao_antiga
+            lista_usuario_search.append([id, descricao, descricao_antiga, diferenca])
 
 lista_usuario_search = [i for i in lista_usuario_search if i[3] == False]
 
 print("Valores a serem alterados:")
-pprint(lista_usuario_search)
+for user in lista_usuario_search:
+    pprint(user)
 
 reposta = input("Deseja continuar? (S,N) :")
 
