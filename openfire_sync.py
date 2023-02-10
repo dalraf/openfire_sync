@@ -94,7 +94,7 @@ if len(lista_usuario_search) == 0:
     exit(0)
 else:
     print("Valores a serem alterados:")
-    pprint(user)
+    pprint(lista_usuario_search)
     reposta = input("Deseja continuar? (S,N) :")
     if reposta.upper() == "S":
         for user in lista_usuario_search:
