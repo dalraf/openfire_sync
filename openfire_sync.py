@@ -30,9 +30,11 @@ planilha_coopemg = pd.read_excel(
     coopemg_arquivo_data, skiprows=6, index_col=None, header=None
 )
 
-planilha_coopemg.dropna(thresh=5, axis=0, inplace=True)
 planilha_coopemg[1] = planilha_coopemg[1].fillna(method="ffill")
+planilha_coopemg.dropna(thresh=5, axis=0, inplace=True)
 planilha_coopemg.fillna("", inplace=True)
+
+planilha_coopemg.to_excel("/home/daniel/Documentos/planilha_coopemg.xlsx", index=False)
 
 lista_users_update_add = []
 for j in planilha_coopemg.iterrows():
