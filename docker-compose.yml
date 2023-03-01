@@ -6,4 +6,4 @@ services:
       context: .
       dockerfile: Dockerfile
     restart: always
-    command: python openfire_sync.py auto
+    command: python -u openfire_sync.py auto
