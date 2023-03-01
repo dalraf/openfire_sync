@@ -1,7 +1,9 @@
-server:
-  image: openfire_sync_server
-  build:
-    context: .
-    dockerfile: Dockerfile
-  restart: always
-  command: python openfire_sync.py auto
+version: '3'
+services:
+  open_fire_sync:
+    image: openfire_sync_image
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    command: python openfire_sync.py auto
