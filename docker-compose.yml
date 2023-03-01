@@ -6,4 +6,6 @@ services:
       context: .
       dockerfile: Dockerfile
     restart: always
+    environment:
+      - PYTHONUNBUFFERED=1
     command: python -u openfire_sync.py auto
