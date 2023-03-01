@@ -1,0 +1,7 @@
+server:
+  image: openfire_sync_server
+  build:
+    context: .
+    dockerfile: Dockerfile
+  restart: always
+  command: python openfire_sync.py auto
