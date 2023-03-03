@@ -118,6 +118,8 @@ def main(automatico=False):
             if len(lista_usuario_match_for_update) == 0:
                 print("Não há usuários a serem alterados.")
             else:
+                print('Executando essas alterações:')
+                print(lista_usuario_match_for_update)
                 run_update(openfire, lista_usuario_match_for_update)
             sleep(60)
     else:
