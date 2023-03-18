@@ -1,12 +1,13 @@
-FROM python:3.10-slim
+FROM python:3.9-slim
 
-#Copy all files in current directory into app directory
-COPY . /app
-
-#Change Working Directory to app directory
 WORKDIR /app
 
-# Install Requirements
-RUN pip install -r requirements.txt
+COPY requirements.txt /app
 
-CMD "python" "openfire_sync.py"
+RUN pip3 install -r requirements.txt
+
+COPY . /app
+
+EXPOSE 8501
+
+ENTRYPOINT ["streamlit", "run", "app.py", "--server.port", "8501", "--logger.level=debug"]

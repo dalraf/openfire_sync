@@ -23,10 +23,14 @@ def get_file_data(url):
     f.seek(0)
     return f
 
+
 def get_openfire_object():
-    openfire = Openfire(openfire_user, openfire_password, cooperativa_code, openfire_api)
+    openfire = Openfire(
+        openfire_user, openfire_password, cooperativa_code, openfire_api
+    )
     openfire.get_all_users()
     return openfire
+
 
 def get_planilha_coopemg():
     coopemg_arquivo_data = get_file_data(planilha_url)
@@ -50,7 +54,9 @@ def get_users_for_update():
                 cargo = j[1][1].strip()
                 ramal = j[1][4] if j[1][3] != "*" else ""
                 telefone = (
-                    j[1][3] if "Apenas Ramal" not in j[1][2] and "*" not in j[1][2] else ""
+                    j[1][3]
+                    if "Apenas Ramal" not in j[1][2] and "*" not in j[1][2]
+                    else ""
                 )
                 celular = j[1][5] if j[1][4] != "*" else ""
                 lista_users_for_update.append([nome, cargo, ramal, telefone, celular])
@@ -59,6 +65,7 @@ def get_users_for_update():
             print(e.args[0])
             exit(1)
     return lista_users_for_update
+
 
 def get_lista_usuario_match_for_update(openfire):
     lista_users_for_update = get_users_for_update()
@@ -110,33 +117,12 @@ def run_update(openfire, lista_usuario_match_for_update):
         print(user[0], retorno)
 
 
-def main(automatico=False):
-    if automatico:
-        while True:
-            openfire = get_openfire_object()
-            lista_usuario_match_for_update = get_lista_usuario_match_for_update(openfire)
-            if len(lista_usuario_match_for_update) == 0:
-                print("Não há usuários a serem alterados.")
-            else:
-                print('Executando essas alterações:')
-                print(lista_usuario_match_for_update)
-                run_update(openfire, lista_usuario_match_for_update)
-            sleep(60)
-    else:
-        openfire = get_openfire_object()
-        lista_usuario_match_for_update = get_lista_usuario_match_for_update(openfire)
-        if len(lista_usuario_match_for_update) == 0:
-            print("Não há usuários a serem alterados.")
-        else:
-            print("Valores a serem alterados:")
-            pprint(lista_usuario_match_for_update)
-            reposta = input("Deseja continuar? (S,N) :")
-            if reposta.upper() == "S":
-                run_update(openfire, lista_usuario_match_for_update)
+def retorna_lista():
 
-if __name__ == "__main__":
-    if len(argv) > 1:
-        if argv[1] == "auto":
-            main(automatico=True)
-    else:
-        main()
+    openfire = get_openfire_object()
+    lista_usuario_match_for_update = get_lista_usuario_match_for_update(openfire)
+    return openfire, lista_usuario_match_for_update
+
+
+def executa_lista(openfire, lista_usuario_match_for_update):
+    run_update(openfire, lista_usuario_match_for_update)

@@ -1,11 +1,8 @@
 version: '3'
 services:
-  open_fire_sync:
-    image: openfire_sync_image
-    build:
-      context: .
-      dockerfile: Dockerfile
-    restart: always
-    environment:
-      - PYTHONUNBUFFERED=1
-    command: python -u openfire_sync.py auto
+  app:
+    build: .
+    restart: unless-stopped
+    ports:
+      - '8501:8501'
+
