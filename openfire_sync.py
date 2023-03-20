@@ -47,21 +47,25 @@ def get_planilha_coopemg():
 def get_users_for_update():
     planilha_coopemg = get_planilha_coopemg()
     lista_users_for_update = []
-    for j in planilha_coopemg.iterrows():
+    for linha in planilha_coopemg.iterrows():
         try:
-            nome = j[1][2].strip()
+            nome = linha[1][2].strip()
             if nome != "":
-                cargo = j[1][1].strip()
-                ramal = j[1][4] if j[1][3] != "*" else ""
+                cargo = linha[1][1].strip()
+                ramal = linha[1][4] if linha[1][3] != "*" else ""
                 telefone = (
-                    j[1][3]
-                    if "Apenas Ramal" not in j[1][2] and "*" not in j[1][2]
+                    linha[1][3]
+                    if "Apenas Ramal" not in linha[1][2] and "*" not in linha[1][2]
                     else ""
                 )
-                celular = j[1][5] if j[1][4] != "*" else ""
-                lista_users_for_update.append([nome, cargo, ramal, telefone, celular])
+                celular = linha[1][5] if linha[1][4] != "*" else ""
+                lista_add_linha = [nome, cargo, ramal, telefone, celular]
+                if len(lista_users_for_update) > 0 and lista_users_for_update[-1][0] == nome:
+                    lista_users_for_update[-1][2] += "/ " + lista_add_linha[2] if lista_add_linha[2] != "*" else ""
+                else:
+                    lista_users_for_update.append(lista_add_linha)
         except Exception as e:
-            print(j)
+            print(linha)
             print(e.args[0])
             exit(1)
     return lista_users_for_update
