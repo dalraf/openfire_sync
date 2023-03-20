@@ -30,7 +30,8 @@ st.subheader("Atualização de usuários do Openfire")
 st.write("Clique nos botões abaixo para obter e executar a lista de atualização.")
 
 btn_retorna_lista = st.button("Obter lista de atualização", on_click=retorna_lista_func)
-btn_executa_lista = st.button("Executar atualização", on_click=executa_lista_func)
+if 'lista_alteracao' in st.session_state:
+    btn_executa_lista = st.button("Executar atualização", on_click=executa_lista_func)
 
 # Mensagem de sucesso após a execução
 if 'execucao' in st.session_state:
