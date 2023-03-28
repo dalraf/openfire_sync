@@ -58,7 +58,7 @@ def get_users_for_update():
                     if "Apenas Ramal" not in linha[1][2] and "*" not in linha[1][2]
                     else ""
                 )
-                celular = linha[1][5] if linha[1][4] != "*" else ""
+                celular = linha[1][5]
                 lista_add_linha = [nome, cargo, ramal, telefone, celular]
                 if len(lista_users_for_update) > 0 and lista_users_for_update[-1][0] == nome:
                     lista_users_for_update[-1][2] += "/ " + lista_add_linha[2] if lista_add_linha[2] != "*" else ""
