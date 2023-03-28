@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "openfire-sync"
+version = "0.1.0"
+description = ""
+authors = ["Daniel Fonseca Alves <dalraf@gmail.com>"]
+readme = "README.md"
+packages = [{include = "openfire_sync"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pandas = "^1.5.3"
+jellyfish = "^0.11.0"
+requests = "^2.28.2"
+openpyxl = "^3.1.2"
+streamlit = "^1.20.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
