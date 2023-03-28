@@ -59,12 +59,19 @@ def get_users_for_update():
                     else ""
                 )
                 celular = str(linha[1][5])
-                #Formatar string de celular para o padrão (xx) xxxxx-xxxx
+                # Formatar string de celular para o padrão (xx) xxxxx-xxxx
                 if len(celular) == 11:
-                    celular = "(" + celular[0:2] + ") " + celular[2:7] + "-" + celular[7:]
+                    celular = (
+                        "(" + celular[0:2] + ") " + celular[2:7] + "-" + celular[7:]
+                    )
                 lista_add_linha = [nome, cargo, ramal, telefone, celular]
-                if len(lista_users_for_update) > 0 and lista_users_for_update[-1][0] == nome:
-                    lista_users_for_update[-1][2] += "/ " + lista_add_linha[2] if lista_add_linha[2] != "*" else ""
+                if (
+                    len(lista_users_for_update) > 0
+                    and lista_users_for_update[-1][0] == nome
+                ):
+                    lista_users_for_update[-1][2] += (
+                        "/ " + lista_add_linha[2] if lista_add_linha[2] != "*" else ""
+                    )
                 else:
                     lista_users_for_update.append(lista_add_linha)
         except Exception as e:
@@ -125,7 +132,6 @@ def run_update(openfire, lista_usuario_match_for_update):
 
 
 def retorna_lista():
-
     openfire = get_openfire_object()
     lista_usuario_match_for_update = get_lista_usuario_match_for_update(openfire)
     return openfire, lista_usuario_match_for_update
